@@ -1,48 +1,25 @@
-// Your web app's Firebase configuration
-var firebaseConfig = {
-    apiKey: "AIzaSyAFEIc_Po4HPQ7mOg1SSL_lg56mJw0qAcE",
-    authDomain: "campus-ambassador-b3c7a.firebaseapp.com",
-    databaseURL: "https://campus-ambassador-b3c7a.firebaseio.com",
-    projectId: "campus-ambassador-b3c7a",
-    storageBucket: "campus-ambassador-b3c7a.appspot.com",
-    messagingSenderId: "714049994844",
-    appId: "1:714049994844:web:6a8c6363605c9b4bfc2699",
-    measurementId: "G-6JS999HH5P"
-};
+const express = require('express');
+const bodyParser = require('body-parser');
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+const app = express();
+const urlencodedParser = bodyParser.urlencoded({extended: false});
+const jsonParser = bodyParser.json();
 
-var db = firebase.firestore();
-var provider = new firebase.auth.GoogleAuthProvider();
+app.set('view engine', 'ejs');
+app.use(express.static('./assets'));
 
-function googleSignIn() {
-    firebase.auth.signInWithRedirect(provider);
-    firebase.auth.getRedirectResult().then((result) => {
-        if (result.credential) {
-            var token = result.credential.accessToken;
-            var user = result.user;
+app.get('/', (req, res) => {
+    res.render('index');
+});
 
-            console.log(user); // testing
-        }
-        // TODO : redirect to refral page
-    }).catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        var email = error.email; // signIn email used
-        var cred = error.credential; // credential used to verify
-    });
-}
+app.get('/form', jsonParser, (req, res) => {
+    console.log(req.body); // testing
+    res.render('form', {user: req.body});
+});
 
-function googleSignOut() {
-    firebase.auth.signOut()
-    .then(() => {
-        console.log("SignOut successful")
-    }).catch((error) => {
-        console.log(error);
-    });
-}
+app.post('/form', urlencodedParser, (req, res) => {
 
-getElementById("authIn").addEventListner("click", googleSignIn);
-getElementById("authOut").addEventListner("click", googleSignOut);
+});
+
+app.listen(8000);
+console.log('listening to port 8000');
